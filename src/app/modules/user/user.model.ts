@@ -6,6 +6,8 @@ import {
   TUserName,
   UserModel,
 } from './user.interface';
+import config from '../../config';
+import bcrypt from 'bcrypt';
 
 const userNameSchema = new Schema<TUserName>(
   {
@@ -51,6 +53,23 @@ const userSchema = new Schema<TUser, UserModel>({
   address: { type: userAddressSchema },
   orders: { type: [orderSchema] },
 });
+
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this; //doc
+  //hashing password and save into DB
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds),
+  );
+  next();
+});
+// delete password for not showing in response
+userSchema.methods.toJSON = function () {
+  const user = this.toObject();
+  delete user.password;
+  return user;
+};
 
 // creating custom static method
 userSchema.statics.isUserExists = async function (userId: number) {
