@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.service';
 import userValidationSchema from './user.validation';
+import { User } from './user.model';
 
 // create user
 const createUser = async (req: Request, res: Response) => {
@@ -50,8 +51,19 @@ const getAllUsers = async (req: Request, res: Response) => {
 const getSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
+    // check user exists or not
+    const userIsExists = await User.isUserExists(Number(userId));
+    if (!userIsExists) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
     const result = await UserServices.getSingleUserFromDB(Number(userId));
-
     res.status(200).json({
       success: true,
       message: 'User fetched successfully!',
