@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UserServices } from './user.service';
 import userValidationSchema from './user.validation';
 
+// create user
 const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
@@ -25,6 +26,7 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
+// get all users
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await UserServices.getAllUsersFromDB();
@@ -44,7 +46,29 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+// get single user
+const getSingleUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await UserServices.getSingleUserFromDB(Number(userId));
+
+    res.status(200).json({
+      success: true,
+      message: 'User fetched successfully!',
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Something went wrong',
+      error: error,
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUsers,
+  getSingleUser,
 };
