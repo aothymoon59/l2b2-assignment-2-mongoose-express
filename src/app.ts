@@ -16,6 +16,7 @@ const serverController = (req: Request, res: Response) => {
     message: 'Welcome to User Server',
   });
 };
+
 app.get('/', serverController);
 
 export default app;
