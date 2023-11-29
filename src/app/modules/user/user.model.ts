@@ -1,33 +1,48 @@
 import { Schema, model } from 'mongoose';
 import { TOrder, TUser, TUserAddress, TUserName } from './user.interface';
 
-const userNameSchema = new Schema<TUserName>({
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-});
+const userNameSchema = new Schema<TUserName>(
+  {
+    firstName: { type: String },
+    lastName: { type: String },
+  },
+  {
+    _id: false,
+  },
+);
 
-const userAddressSchema = new Schema<TUserAddress>({
-  street: { type: String, required: true },
-  city: { type: String, required: true },
-  country: { type: String, required: true },
-});
+const userAddressSchema = new Schema<TUserAddress>(
+  {
+    street: { type: String },
+    city: { type: String },
+    country: { type: String },
+  },
+  {
+    _id: false,
+  },
+);
 
-const orderSchema = new Schema<TOrder>({
-  productName: { type: String, required: true },
-  price: { type: Number, required: true },
-  quantity: { type: Number, required: true },
-});
+const orderSchema = new Schema<TOrder>(
+  {
+    productName: { type: String },
+    price: { type: Number },
+    quantity: { type: Number },
+  },
+  {
+    _id: false,
+  },
+);
 
 const userSchema = new Schema<TUser>({
-  userId: { type: Number, unique: true, required: true },
-  username: { type: String, unique: true, required: true },
-  password: { type: String, required: true, select: false },
-  fullName: { type: userNameSchema, required: true },
-  age: { type: Number, required: true },
-  email: { type: String, required: true },
+  userId: { type: Number, unique: true },
+  username: { type: String, unique: true },
+  password: { type: String, select: false },
+  fullName: { type: userNameSchema },
+  age: { type: Number },
+  email: { type: String },
   isActive: { type: Boolean },
   hobbies: { type: [String] },
-  address: { type: userAddressSchema, required: true },
+  address: { type: userAddressSchema },
   orders: { type: [orderSchema] },
 });
 
