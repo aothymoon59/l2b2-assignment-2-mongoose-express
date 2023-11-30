@@ -33,5 +33,9 @@ or
 ###### for production
 
 ```
+npm run build
+```
+
+```
 npm run start:prod
 ```
