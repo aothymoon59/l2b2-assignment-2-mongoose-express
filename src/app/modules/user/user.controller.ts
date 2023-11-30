@@ -115,9 +115,43 @@ const updateSingleUser = async (req: Request, res: Response) => {
   }
 };
 
+// delete a user
+const deleteSingleUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    // check user exists or not
+    const userIsExists = await User.isUserExists(Number(userId));
+    if (!userIsExists) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
+    await UserServices.deleteUserFromDB(Number(userId));
+
+    res.status(200).json({
+      success: true,
+      message: 'User deleted successfully!',
+      data: null,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Something went wrong',
+      error: error,
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
   updateSingleUser,
+  deleteSingleUser,
 };
