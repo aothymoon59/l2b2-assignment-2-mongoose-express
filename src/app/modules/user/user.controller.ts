@@ -3,7 +3,7 @@ import { UserServices } from './user.service';
 import userValidationSchema, { orderValidationSchema } from './user.validation';
 import { User } from './user.model';
 
-// create user
+// Create a new user
 const createUser = async (req: Request, res: Response) => {
   try {
     const userData = req.body;
@@ -27,7 +27,7 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
-// get all users
+// Retrieve a list of all users
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await UserServices.getAllUsersFromDB();
@@ -47,7 +47,7 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-// get single user
+// Retrieve a specific user by ID
 const getSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -79,7 +79,7 @@ const getSingleUser = async (req: Request, res: Response) => {
   }
 };
 
-// update user by id
+// Update user information
 const updateSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -115,7 +115,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
   }
 };
 
-// delete a user
+// Delete a user
 const deleteSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
@@ -186,6 +186,40 @@ const addNewProduct = async (req: Request, res: Response) => {
   }
 };
 
+// Retrieve all orders for a specific user
+const getAllOrdersFromUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    // check user exists or not
+    const userIsExists = await User.isUserExists(Number(userId));
+    if (!userIsExists) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
+    const result = await UserServices.getAllOrdersFromUserIntoDB(
+      Number(userId),
+    );
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully!',
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Something went wrong',
+      error: error,
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUsers,
@@ -193,4 +227,5 @@ export const UserControllers = {
   updateSingleUser,
   deleteSingleUser,
   addNewProduct,
+  getAllOrdersFromUser,
 };

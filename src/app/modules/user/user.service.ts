@@ -1,7 +1,7 @@
 import { TOrder, TUser } from './user.interface';
 import { User } from './user.model';
 
-// create user
+// Create a new user
 const createUserIntoDB = async (userData: TUser) => {
   if (await User.isUserExists(userData.userId)) {
     throw new Error('User already exists');
@@ -10,7 +10,7 @@ const createUserIntoDB = async (userData: TUser) => {
   return result;
 };
 
-// get all user
+// Retrieve a list of all users
 const getAllUsersFromDB = async () => {
   const result = await User.find().select({
     username: 1,
@@ -23,13 +23,13 @@ const getAllUsersFromDB = async () => {
   return result;
 };
 
-// get single user by id
+// Retrieve a specific user by ID
 const getSingleUserFromDB = async (userId: number) => {
   const result = await User.findOne({ userId });
   return result;
 };
 
-// update user by id
+// Update user information
 const updateUserFromDB = async (userId: number, user: TUser) => {
   await User.updateOne({ userId }, { $set: user }, { new: true });
 
@@ -37,7 +37,7 @@ const updateUserFromDB = async (userId: number, user: TUser) => {
   return result;
 };
 
-// delete a user
+// Delete a user
 const deleteUserFromDB = async (userId: number) => {
   const result = await User.deleteOne({ userId });
   return result;
@@ -57,6 +57,12 @@ const addNewProductInUserIntoDb = async (userId: number, order: TOrder) => {
   return result;
 };
 
+// Retrieve all orders for a specific user
+const getAllOrdersFromUserIntoDB = async (userId: number) => {
+  const result = await User.findOne({ userId }).select({ orders: 1, _id: 0 });
+  return result;
+};
+
 export const UserServices = {
   createUserIntoDB,
   getAllUsersFromDB,
@@ -64,4 +70,5 @@ export const UserServices = {
   updateUserFromDB,
   deleteUserFromDB,
   addNewProductInUserIntoDb,
+  getAllOrdersFromUserIntoDB,
 };
