@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.service';
-import userValidationSchema from './user.validation';
+import userValidationSchema, { orderValidationSchema } from './user.validation';
 import { User } from './user.model';
 
 // create user
@@ -148,10 +148,49 @@ const deleteSingleUser = async (req: Request, res: Response) => {
   }
 };
 
+// Add New Product in Order
+const addNewProduct = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const userData = req.body;
+    // check user exists or not
+    const userIsExists = await User.isUserExists(Number(userId));
+    if (!userIsExists) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    }
+
+    // data validation using zod
+    const zodParsedData = orderValidationSchema.parse(userData);
+
+    await UserServices.addNewProductInUserIntoDb(Number(userId), zodParsedData);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order created successfully!',
+      data: null,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Something went wrong',
+      error: error,
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
   updateSingleUser,
   deleteSingleUser,
+  addNewProduct,
 };
