@@ -63,6 +63,24 @@ const getAllOrdersFromUserIntoDB = async (userId: number) => {
   return result;
 };
 
+// Calculate Total Price of Orders for a Specific User
+const getTotalOrdersPriceByUserIntoDB = async (userId: number) => {
+  const result = await User.aggregate([
+    { $match: { userId } },
+    { $unwind: '$orders' },
+    {
+      $group: {
+        _id: null,
+        totalPrice: {
+          $sum: { $multiply: ['$orders.price', '$orders.quantity'] },
+        },
+      },
+    },
+    { $project: { _id: 0 } },
+  ]);
+  return result;
+};
+
 export const UserServices = {
   createUserIntoDB,
   getAllUsersFromDB,
@@ -71,4 +89,5 @@ export const UserServices = {
   deleteUserFromDB,
   addNewProductInUserIntoDb,
   getAllOrdersFromUserIntoDB,
+  getTotalOrdersPriceByUserIntoDB,
 };
